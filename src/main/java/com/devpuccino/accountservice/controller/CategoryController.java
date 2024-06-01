@@ -3,7 +3,6 @@ package com.devpuccino.accountservice.controller;
 
 import com.devpuccino.accountservice.domain.request.CategoryRequest;
 import com.devpuccino.accountservice.domain.response.CommonResponse;
-import com.devpuccino.accountservice.exception.DuplicateDataException;
 import com.devpuccino.accountservice.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
