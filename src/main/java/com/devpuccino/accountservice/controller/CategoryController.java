@@ -1,13 +1,14 @@
 package com.devpuccino.accountservice.controller;
 
 
+import com.devpuccino.accountservice.constant.ResponseConstant;
 import com.devpuccino.accountservice.domain.request.CategoryRequest;
+import com.devpuccino.accountservice.domain.response.Category;
 import com.devpuccino.accountservice.domain.response.CommonResponse;
 import com.devpuccino.accountservice.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -21,34 +22,19 @@ public class CategoryController {
     public CommonResponse insertCategory(@RequestBody CategoryRequest request) throws Exception {
         categoryService.insertCategory(request);
         CommonResponse response = new CommonResponse();
-        response.setCode("200-000");
-        response.setMessage("Success");
+        response.setCode(ResponseConstant.SUCCESS_CODE);
+        response.setMessage(ResponseConstant.SUCCESS_MESSAGE);
         return response;
     }
 
     @GetMapping
-    public List<CategoryRequest> getAllCategory() {
-        List<CategoryRequest> responseList = new ArrayList<>();
-
-        CategoryRequest response = new CategoryRequest();
-        response.setIsActive(true);
-        response.setCategoryName("Food");
-
-        CategoryRequest response2 = new CategoryRequest();
-        response.setIsActive(true);
-        response.setCategoryName("Internet");
-        responseList.add(response);
-        responseList.add(response2);
-        return responseList;
-    }
-
-    @GetMapping(path = "/{id}")
-    public CategoryRequest getCategoryById(@PathVariable("id") String id) {
-        CategoryRequest response = new CategoryRequest();
-        response.setIsActive(true);
-        response.setCategoryName("Food");
+    public CommonResponse getAllCategory() {
+        List<Category> categoryList = categoryService.getAllCategory();
+        CommonResponse response = new CommonResponse();
+        response.setCode(ResponseConstant.SUCCESS_CODE);
+        response.setMessage(ResponseConstant.SUCCESS_MESSAGE);
+        response.setData(categoryList);
         return response;
     }
-
 
 }

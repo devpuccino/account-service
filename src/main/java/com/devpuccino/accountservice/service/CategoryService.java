@@ -1,6 +1,7 @@
 package com.devpuccino.accountservice.service;
 
 import com.devpuccino.accountservice.domain.request.CategoryRequest;
+import com.devpuccino.accountservice.domain.response.Category;
 import com.devpuccino.accountservice.entity.CategoryEntity;
 import com.devpuccino.accountservice.exception.DuplicateDataException;
 import com.devpuccino.accountservice.repository.CategoryRepository;
@@ -9,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,14 +23,27 @@ public class CategoryService {
     public void insertCategory(CategoryRequest request) throws Exception {
         logger.info("Receive Request = {}  {}", request);
         List<CategoryEntity> categoryEntityList = this.categoryRepository.findByCategoryName(request.getCategoryName());
-        if(categoryEntityList == null || categoryEntityList.size() == 0){
+        if (categoryEntityList == null || categoryEntityList.size() == 0) {
             CategoryEntity entity = new CategoryEntity();
             entity.setCategoryName(request.getCategoryName());
             entity.setActive(request.getIsActive());
             this.categoryRepository.save(entity);
             logger.info("Save Request = {}  {}", request);
-        }else{
-            throw new DuplicateDataException("Duplication data categoryName "+request.getCategoryName());
+        } else {
+            throw new DuplicateDataException("Duplication data categoryName " + request.getCategoryName());
         }
+    }
+
+    public List<Category> getAllCategory() {
+        List<CategoryEntity> categoryEntityList = categoryRepository.findAll();
+        List<Category> categoryList = categoryEntityList.stream().map((categoryEntity)->{
+            Category category = new Category();
+            category.setId(categoryEntity.getId().toString());
+            category.setCategoryName(categoryEntity.getCategoryName());
+            category.setActive(categoryEntity.isActive());
+            return category;
+        }).toList();
+
+        return categoryList;
     }
 }
