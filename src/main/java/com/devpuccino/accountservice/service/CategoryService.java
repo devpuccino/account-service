@@ -36,14 +36,14 @@ public class CategoryService {
 
     public List<Category> getAllCategory() {
         List<CategoryEntity> categoryEntityList = categoryRepository.findAll();
-        List<Category> categoryList = new ArrayList<>();
-        for(CategoryEntity entity : categoryEntityList){
+        List<Category> categoryList = categoryEntityList.stream().map((categoryEntity)->{
             Category category = new Category();
-            category.setId(entity.getId().toString());
-            category.setCategoryName(entity.getCategoryName());
-            category.setActive(entity.isActive());
-            categoryList.add(category);
-        }
+            category.setId(categoryEntity.getId().toString());
+            category.setCategoryName(categoryEntity.getCategoryName());
+            category.setActive(categoryEntity.isActive());
+            return category;
+        }).toList();
+
         return categoryList;
     }
 }
