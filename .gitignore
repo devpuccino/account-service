@@ -24,3 +24,6 @@ hs_err_pid*
 replay_pid*
 .idea
 /target/
+/docker/data/
+/docker/data-1/
+/docker/data-2/

@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  mariadb:
+    image: mariadb:11
+    ports:
+      - "3306:3306"
+    volumes:
+      - "./data-1:/var/lib/mysql"
+    environment:
+      - MARIADB_USER=admin
+      - MARIADB_PASSWORD=P@ssw0rd
+      - MARIADB_DATABASE=account_db
+      - MARIADB_ROOT_PASSWORD=P@ssw0rd
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
