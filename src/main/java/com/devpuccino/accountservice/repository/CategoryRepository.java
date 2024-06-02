@@ -1,7 +1,6 @@
 package com.devpuccino.accountservice.repository;
 
 import com.devpuccino.accountservice.entity.CategoryEntity;
-import com.devpuccino.accountservice.exception.DuplicateDataException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
