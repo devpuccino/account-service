@@ -1,6 +1,7 @@
 package com.devpuccino.accountservice.controller;
 
 
+import com.devpuccino.accountservice.constant.ResponseConstant;
 import com.devpuccino.accountservice.domain.request.CategoryRequest;
 import com.devpuccino.accountservice.domain.response.Category;
 import com.devpuccino.accountservice.domain.response.CommonResponse;
@@ -21,8 +22,8 @@ public class CategoryController {
     public CommonResponse insertCategory(@RequestBody CategoryRequest request) throws Exception {
         categoryService.insertCategory(request);
         CommonResponse response = new CommonResponse();
-        response.setCode("200-000");
-        response.setMessage("Success");
+        response.setCode(ResponseConstant.SUCCESS_CODE);
+        response.setMessage(ResponseConstant.SUCCESS_MESSAGE);
         return response;
     }
 
@@ -30,8 +31,8 @@ public class CategoryController {
     public CommonResponse getAllCategory() {
         List<Category> categoryList = categoryService.getAllCategory();
         CommonResponse response = new CommonResponse();
-        response.setCode("200-000");
-        response.setMessage("Success");
+        response.setCode(ResponseConstant.SUCCESS_CODE);
+        response.setMessage(ResponseConstant.SUCCESS_MESSAGE);
         response.setData(categoryList);
         return response;
     }
