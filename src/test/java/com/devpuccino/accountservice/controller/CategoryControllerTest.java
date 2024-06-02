@@ -111,4 +111,52 @@ public class CategoryControllerTest {
                 .andExpect(jsonPath("$.code").value("500-001"))
                 .andExpect(jsonPath("$.message").value("Internal server error"));
     }
+
+    @Test
+    public void shouldResponseCategoryListWhenGetAllCategory() throws Exception {
+
+        List<CategoryEntity> categoryEntityList = new ArrayList<>();
+
+        CategoryEntity categoryEntity1 = new CategoryEntity();
+        categoryEntity1.setId(1);
+        categoryEntity1.setCategoryName("Coffee");
+        categoryEntity1.setActive(true);
+        categoryEntityList.add(categoryEntity1);
+
+        CategoryEntity categoryEntity2 = new CategoryEntity();
+        categoryEntity2.setId(2);
+        categoryEntity2.setCategoryName("Internet");
+        categoryEntity2.setActive(false);
+        categoryEntityList.add(categoryEntity2);
+
+        Mockito.when(categoryRepository.findAll()).thenReturn(categoryEntityList);
+        //when
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/api/category")
+                .accept(MediaType.APPLICATION_JSON);
+        mockMvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("200-000"))
+                .andExpect(jsonPath("$.message").value("Success"))
+                .andExpect(jsonPath("$.data[0].id").value("1"))
+                .andExpect(jsonPath("$.data[0].category_name").value("Coffee"))
+                .andExpect(jsonPath("$.data[0].active").value(true))
+                .andExpect(jsonPath("$.data[1].id").value("2"))
+                .andExpect(jsonPath("$.data[1].category_name").value("Internet"))
+                .andExpect(jsonPath("$.data[1].active").value(false));
+    }
+
+    @Test
+    public void shouldResponseEmptyCategoryListWhenGetAllCategory() throws Exception {
+        Mockito.when(categoryRepository.findAll()).thenReturn(new ArrayList<>());
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/api/category")
+                .accept(MediaType.APPLICATION_JSON);
+        mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("200-000"))
+                .andExpect(jsonPath("$.message").value("Success"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data").isEmpty());
+
+    }
 }
