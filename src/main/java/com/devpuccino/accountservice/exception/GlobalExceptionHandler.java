@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import static com.devpuccino.accountservice.constant.ResponseConstant.*;
+
 @Component
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -20,8 +22,8 @@ public class GlobalExceptionHandler {
     public CommonResponse handleException(Exception exception){
         logger.error(exception.getMessage(),exception);
         CommonResponse response = new CommonResponse();
-        response.setCode("500-001");
-        response.setMessage("Internal server error");
+        response.setCode(UNEXPECTED_ERROR_CODE);
+        response.setMessage(UNEXPECTED_ERROR_MESSAGE);
         return response;
     }
 
@@ -30,8 +32,19 @@ public class GlobalExceptionHandler {
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public CommonResponse handleDuplicateDataException(DuplicateDataException exception){
         CommonResponse response = new CommonResponse();
-        response.setCode("400-001");
-        response.setMessage("Duplicate data");
+        response.setCode(DUPLICATE_DATA_CODE);
+        response.setMessage(DUPLICATE_DATA_MESSAGE);
+        return response;
+    }
+
+    @ExceptionHandler(DataNotFoundException.class)
+    @ResponseBody
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    public CommonResponse handleDataNotFoundException(DataNotFoundException exception){
+        logger.error(exception.getMessage(),exception);
+        CommonResponse response = new CommonResponse();
+        response.setCode(DATA_NOT_FOUND_CODE);
+        response.setMessage(DATA_NOT_FOUND_MESSAGE);
         return response;
     }
 }
