@@ -1,8 +1,10 @@
 package com.devpuccino.accountservice.controller;
 
+import com.devpuccino.accountservice.domain.response.Category;
 import com.devpuccino.accountservice.entity.CategoryEntity;
 import com.devpuccino.accountservice.repository.CategoryRepository;
 import com.devpuccino.accountservice.service.CategoryService;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -20,6 +22,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.regex.Matcher;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -157,6 +161,34 @@ public class CategoryControllerTest {
                 .andExpect(jsonPath("$.message").value("Success"))
                 .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data").isEmpty());
+    }
+    @Test
+    public void shouldResponseCategoryWhenGetById() throws Exception {
+        CategoryEntity category = new CategoryEntity();
+        category.setId(1);
+        category.setCategoryName("Coffee");
+        category.setActive(true);
+        Mockito.when(categoryRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(category));
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/api/category/1")
+                .accept(MediaType.APPLICATION_JSON);
+        mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("200-000"))
+                .andExpect(jsonPath("$.message").value("Success"))
+                .andExpect(jsonPath("$.data.id").value("1"))
+                .andExpect(jsonPath("$.data.category_name").value("Coffee"))
+                .andExpect(jsonPath("$.data.active").value(true));
+    }
+    @Test
+    public void shouldResponseDataNotFoundWhenGetByIdThatNotExistInDatabase() throws Exception {
+        Mockito.when(categoryRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/api/category/1")
+                .accept(MediaType.APPLICATION_JSON);
+        mockMvc.perform(request)
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("404-001"))
+                .andExpect(jsonPath("$.message").value("Data not found"))
+                .andExpect(jsonPath("$.data").value(Matchers.nullValue()));
 
     }
 }
