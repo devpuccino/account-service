@@ -49,5 +49,13 @@ public class CategoryController {
         response.setData(category);
         return response;
     }
+    @DeleteMapping("/{id}")
+    public CommonResponse deleteCategoryById(@PathVariable("id") String id) throws DataNotFoundException {
+        categoryService.deleteCategoryById(id);
+        CommonResponse response= new CommonResponse<>();
+        response.setCode(ResponseConstant.SUCCESS_CODE);
+        response.setMessage(ResponseConstant.SUCCESS_MESSAGE);
+        return response;
+    }
 
 }
