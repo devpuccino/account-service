@@ -61,4 +61,15 @@ public class CategoryService {
             throw new DataNotFoundException("Category not found id=["+id+"]");
         }
     }
+
+    public void deleteCategoryById(String id) throws DataNotFoundException {
+        Optional<CategoryEntity> entity = categoryRepository.findById(Integer.parseInt(id));
+        if(entity.isPresent()){
+            CategoryEntity categoryEntity = entity.get();
+            categoryEntity.setActive(false);
+            categoryRepository.save(categoryEntity);
+        }else{
+            throw  new DataNotFoundException("Delete Category not found id=["+id+"]");
+        }
+    }
 }

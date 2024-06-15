@@ -1,5 +1,6 @@
 package com.devpuccino.accountservice.controller;
 
+import com.devpuccino.accountservice.constant.ResponseConstant;
 import com.devpuccino.accountservice.domain.response.Category;
 import com.devpuccino.accountservice.entity.CategoryEntity;
 import com.devpuccino.accountservice.repository.CategoryRepository;
@@ -7,6 +8,7 @@ import com.devpuccino.accountservice.service.CategoryService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -190,5 +192,41 @@ public class CategoryControllerTest {
                 .andExpect(jsonPath("$.message").value("Data not found"))
                 .andExpect(jsonPath("$.data").value(Matchers.nullValue()));
 
+    }
+
+    @Test
+    public void shouldResponseSuccessWhenDeleteCategory() throws Exception {
+        CategoryEntity entity = new CategoryEntity();
+        entity.setId(1);
+        entity.setCategoryName("Coffee");
+        entity.setActive(true);
+        Mockito.when(categoryRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(entity));
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete("/api/category/1")
+                .accept(MediaType.APPLICATION_JSON);
+        mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("200-000"))
+                .andExpect(jsonPath("$.message").value("Success"))
+                .andExpect(jsonPath("$.data").value(Matchers.nullValue()));
+
+        CategoryEntity expectedEntity = new CategoryEntity();
+        expectedEntity.setId(entity.getId());
+        expectedEntity.setCategoryName(entity.getCategoryName());
+        expectedEntity.setActive(false);
+
+        Mockito.verify(categoryRepository,Mockito.times(1)).save(expectedEntity);
+    }
+    @Test
+    public void shouldResponseDataNotFoundWhenDeleteCategoryById() throws Exception {
+        Mockito.when(categoryRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete("/api/category/1")
+                .accept(MediaType.APPLICATION_JSON);
+        mockMvc.perform(request)
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("404-001"))
+                .andExpect(jsonPath("$.message").value("Data not found"))
+                .andExpect(jsonPath("$.data").value(Matchers.nullValue()));
+
+        Mockito.verify(categoryRepository,Mockito.times(0)).save(Mockito.any(CategoryEntity.class));
     }
 }
