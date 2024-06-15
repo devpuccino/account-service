@@ -5,8 +5,8 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class CommonResponse {
+public class CommonResponse<T> {
     private String code;
     private String message;
-    private List<Category> data;
+    private T data;
 }
