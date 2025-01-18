@@ -21,8 +21,6 @@ public class WalletEntity {
     private String walletType;
     @Column(name = "card_type")
     private String cardType;
-    @Column(name = "balance")
-    private BigDecimal balance;
     @Column(name = "credit_limit")
     private BigDecimal creditLimit;
     @Column(name = "payment_due_date")
