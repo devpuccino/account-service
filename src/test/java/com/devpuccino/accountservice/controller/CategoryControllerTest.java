@@ -1,45 +1,55 @@
 package com.devpuccino.accountservice.controller;
 
-import com.devpuccino.accountservice.constant.ResponseConstant;
-import com.devpuccino.accountservice.domain.response.Category;
 import com.devpuccino.accountservice.entity.CategoryEntity;
 import com.devpuccino.accountservice.repository.CategoryRepository;
-import com.devpuccino.accountservice.service.CategoryService;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Matcher;
 
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(SpringExtension.class)
-@WebMvcTest(controllers = {CategoryController.class})
-@Import({CategoryService.class})
+@ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
+@SpringBootTest
 public class CategoryControllerTest {
 
-    @Autowired
     private MockMvc mockMvc;
 
     @MockBean
     private CategoryRepository categoryRepository;
+    @Autowired
+    private WebApplicationContext context;
+    @BeforeEach
+    void setUp(RestDocumentationContextProvider restDocumentation) {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
+                .apply(documentationConfiguration(restDocumentation))
+                .alwaysDo(document("{method-name}/{step}/"))
+                .build();
+    }
+
 
     @Test
     public void shouldResponseSuccessWhenInsertCategory() throws Exception {
