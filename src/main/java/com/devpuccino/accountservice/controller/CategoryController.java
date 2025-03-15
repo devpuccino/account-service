@@ -7,6 +7,8 @@ import com.devpuccino.accountservice.domain.response.Category;
 import com.devpuccino.accountservice.domain.response.CommonResponse;
 import com.devpuccino.accountservice.exception.DataNotFoundException;
 import com.devpuccino.accountservice.service.CategoryService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/category")
 public class CategoryController {
-
+    private static final Logger logger = LogManager.getLogger(CategoryController.class);
     @Autowired
     private CategoryService categoryService;
 
@@ -32,6 +34,7 @@ public class CategoryController {
 
     @GetMapping
     public CommonResponse<List<Category>> getAllCategory() {
+        logger.info("Get All Categories");
         List<Category> categoryList = categoryService.getAllCategory();
         CommonResponse<List<Category>> response = new CommonResponse();
         response.setCode(ResponseConstant.SUCCESS_CODE);
@@ -39,9 +42,19 @@ public class CategoryController {
         response.setData(categoryList);
         return response;
     }
+    @PutMapping("/{id}")
+    public CommonResponse updateCategoryById(@PathVariable("id") String id,@RequestBody CategoryRequest request) throws Exception {
+        Category result = categoryService.updateCategoryById(id, request);
+        CommonResponse response = new CommonResponse<>();
+        response.setCode(ResponseConstant.SUCCESS_CODE);
+        response.setMessage(ResponseConstant.SUCCESS_MESSAGE);
+        response.setData(result);
+        return response;
+    }
 
     @GetMapping("/{id}")
     public CommonResponse<Category> getCategoryById(@PathVariable("id") String id) throws DataNotFoundException {
+       logger.info("Get Category by ID: {}", id);
         Category category = categoryService.getById(id);
         CommonResponse<Category> response = new CommonResponse();
         response.setCode(ResponseConstant.SUCCESS_CODE);

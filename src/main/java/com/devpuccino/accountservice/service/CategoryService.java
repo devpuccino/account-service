@@ -72,4 +72,39 @@ public class CategoryService {
             throw  new DataNotFoundException("Delete Category not found id=["+id+"]");
         }
     }
+    public Category updateCategoryById(String id, CategoryRequest request) throws Exception {
+        logger.info("Receive Update Request {}",request);
+
+        Optional<CategoryEntity> entity = categoryRepository.findById(Integer.parseInt(id));
+        if(entity.isPresent()){
+            CategoryEntity categoryEntity = entity.get();
+
+            if(request.getCategoryName() != null && request.getCategoryName() != "") {
+                List<CategoryEntity> categoryEntityList = this.categoryRepository.findByCategoryName(request.getCategoryName())
+                        .stream()
+                        .filter(entity1 -> entity1.getId() != Integer.parseInt(id)).toList();
+                if(categoryEntityList == null || categoryEntityList.size() == 0) {
+                    categoryEntity.setCategoryName(request.getCategoryName());
+
+                }else {
+                    throw new DuplicateDataException("Duplicate data categoryName "+request.getCategoryName());
+                }
+            }
+
+            if(request.getIsActive() != null) {
+                categoryEntity.setActive(request.getIsActive());
+            }
+            categoryEntity = categoryRepository.save(categoryEntity);
+            return this.transformCategory(categoryEntity);
+        } else {
+            throw new DataNotFoundException("Update Category not found id=["+id+"]");
+        }
+    }
+    private Category transformCategory(CategoryEntity entity){
+        Category category = new Category();
+        category.setId(entity.getId().toString());
+        category.setCategoryName(entity.getCategoryName());
+        category.setActive(entity.isActive());
+        return category;
+    }
 }
