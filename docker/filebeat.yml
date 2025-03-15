@@ -1,0 +1,5 @@
+filebeat.inputs:
+  - type: stdin
+    enabled: true
+output.logstash:
+  hosts: ["192.168.7.100:5044"]
