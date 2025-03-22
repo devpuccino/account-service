@@ -4,9 +4,9 @@ COPY ./src /data/build/src
 COPY ./pom.xml /data/build/pom.xml
 RUN curl -L -O https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/latest/download/opentelemetry-javaagent.jar && \
     mv opentelemetry-javaagent.jar /data/build/opentelemetry-javaagent.jar
-RUN curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-8.17.2-linux-x86_64.tar.gz && \
-    tar xzvf filebeat-8.17.2-linux-x86_64.tar.gz && \
-    mv filebeat-8.17.2-linux-x86_64 /data/build/filebeat
+RUN curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-oss-7.12.1-linux-x86_64.tar.gz && \
+    tar xzvf filebeat-oss-7.12.1-linux-x86_64.tar.gz && \
+    mv filebeat-7.12.1-linux-x86_64 /data/build/filebeat
 RUN mvn -f /data/build/pom.xml versions:set -DnewVersion=$VERSION && \
     mvn -f /data/build/pom.xml clean package
 
