@@ -3,6 +3,8 @@ server:
   servlet:
     context-path: /account-service
 spring:
+  application:
+    name: account-service
   jackson:
     property-naming-strategy: SNAKE_CASE
   datasource:
@@ -14,3 +16,8 @@ spring:
       minimum-idle: 5
       maximum-pool-size: 10
       max-lifetime: 300000
+logging:
+  level:
+    root: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX}|1|%level|${spring.application.name:-}|%X{traceId},%X{spanId},%X{X-Correlation-Id}|${PID:-}|%thread|%logger{40}|%message%n"
