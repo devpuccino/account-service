@@ -24,11 +24,13 @@ COPY --from=builder /data/build/target/*.jar /data/$APP_NAME/application.jar
 COPY --from=builder /data/build/opentelemetry-javaagent.jar /data/$APP_NAME/opentelemetry-javaagent.jar
 COPY --from=builder /data/build/logstash /data/$APP_NAME/logstash
 COPY ./startup.sh /data/$APP_NAME/startup.sh
-COPY ./docker/filebeat.yml /etc/filebeat/filebeat.yml
 COPY ./docker/pipeline.conf /etc/logstash/pipeline.conf
+COPY ./docker/logstash-log4j2.properties /data/$APP_NAME/logstash/config/log4j2.properties
+RUN ln -fs /usr/share/zoneinfo/Asia/Bangkok /etc/localtime && \
+    echo 'Asia/Bangkok' > /etc/timezone
 RUN cd /data/$APP_NAME/logstash && \
     chmod +x bin/logstash-plugin && \
-    ./bin/logstash-plugin install logstash-output-opensearch
+    ./bin/logstash-plugin install logstash-output-opensearch logstash-filter-multiline
 RUN chmod +x /data/$APP_NAME/startup.sh
 RUN chmod +x /data/$APP_NAME/logstash/bin/logstash
 WORKDIR /data/$APP_NAME
