@@ -3,3 +3,9 @@ filebeat.inputs:
     enabled: true
 output.logstash:
   hosts: ["192.168.7.100:5044"]
+seccomp:
+  default_action: allow
+  syscalls:
+  - action: allow
+    names:
+    - rseq
