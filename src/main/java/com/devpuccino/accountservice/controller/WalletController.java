@@ -6,6 +6,8 @@ import com.devpuccino.accountservice.domain.response.CommonResponse;
 import com.devpuccino.accountservice.domain.response.Wallet;
 import com.devpuccino.accountservice.exception.DataNotFoundException;
 import com.devpuccino.accountservice.service.WalletService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,16 +16,21 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/wallet")
 public class WalletController {
+
+    private static Logger logger = LogManager.getLogger(WalletController.class);
+
     @Autowired
     private WalletService walletService;
     @GetMapping
     public CommonResponse<List<Wallet>> getAllWallet(){
-        List<Wallet> wallets = walletService.getAllWallet();
+        logger.info("getAllWallet");
 
+        List<Wallet> wallets = walletService.getAllWallet();
         CommonResponse commonResponse = new CommonResponse();
         commonResponse.setCode(ResponseConstant.SUCCESS_CODE);
         commonResponse.setMessage(ResponseConstant.SUCCESS_MESSAGE);
         commonResponse.setData(wallets);
+
         return commonResponse;
     }
 
