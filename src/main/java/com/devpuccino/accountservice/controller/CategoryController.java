@@ -54,7 +54,6 @@ public class CategoryController {
 
     @GetMapping("/{id}")
     public CommonResponse<Category> getCategoryById(@PathVariable("id") String id) throws DataNotFoundException {
-       logger.info("Get Category by ID: {}", id);
         Category category = categoryService.getById(id);
         CommonResponse<Category> response = new CommonResponse();
         response.setCode(ResponseConstant.SUCCESS_CODE);
