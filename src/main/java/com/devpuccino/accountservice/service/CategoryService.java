@@ -6,6 +6,7 @@ import com.devpuccino.accountservice.entity.CategoryEntity;
 import com.devpuccino.accountservice.exception.DataNotFoundException;
 import com.devpuccino.accountservice.exception.DuplicateDataException;
 import com.devpuccino.accountservice.repository.CategoryRepository;
+import io.micrometer.observation.annotation.Observed;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,7 @@ public class CategoryService {
         return categoryList;
     }
 
+    @Observed(name="service--get-by-id")
     public Category getById(String id) throws DataNotFoundException {
         Optional<CategoryEntity> entity = categoryRepository.findById(Integer.parseInt(id));
         if(entity.isPresent()){

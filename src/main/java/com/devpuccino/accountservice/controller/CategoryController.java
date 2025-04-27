@@ -7,6 +7,7 @@ import com.devpuccino.accountservice.domain.response.Category;
 import com.devpuccino.accountservice.domain.response.CommonResponse;
 import com.devpuccino.accountservice.exception.DataNotFoundException;
 import com.devpuccino.accountservice.service.CategoryService;
+import io.micrometer.observation.annotation.Observed;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,7 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
+    @Observed(name="api:get-category-by-id")
     public CommonResponse<Category> getCategoryById(@PathVariable("id") String id) throws DataNotFoundException {
         Category category = categoryService.getById(id);
         CommonResponse<Category> response = new CommonResponse();
