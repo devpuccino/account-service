@@ -36,7 +36,7 @@ public class TransactionControllerTest {
                 "wallet_id": "1",
                 "category_id": "1",
                 "amount": 125.50,
-                "transaction_date": 1746259150,
+                "transaction_date": "2025-05-01",
                 "transaction_type": "INCOME"
             }
         """;
