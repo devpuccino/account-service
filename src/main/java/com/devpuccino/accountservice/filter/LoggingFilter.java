@@ -1,67 +1,46 @@
 package com.devpuccino.accountservice.filter;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.ServletRequest;
+import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StreamUtils;
-import org.springframework.web.filter.AbstractRequestLoggingFilter;
+import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
+import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
 @Component
-@Order(2)
-public class RequestLoggingFilter extends AbstractRequestLoggingFilter {
+@Order(3)
+public class LoggingFilter extends OncePerRequestFilter {
     @Autowired
     private ObjectMapper objectMapper;
-    private static final Logger logger = LogManager.getLogger(RequestLoggingFilter.class);
 
-    public RequestLoggingFilter() {
-        this.setIncludePayload(true);
-
-    }
+    private static final Logger logger = LogManager.getLogger(LoggingFilter.class);
 
     @Override
-    protected void beforeRequest(HttpServletRequest request, String message) {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
+        Long startTime = System.currentTimeMillis();
+        ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
+        ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
         try {
-            this.logRequest(request);
-        } catch (Exception ex) {
-            if (logger.isDebugEnabled()) {
-                ex.printStackTrace();
-            }
+            logRequest(requestWrapper);
+            chain.doFilter(requestWrapper, responseWrapper);
+        } finally {
+            logResponse(responseWrapper,startTime);
         }
+
     }
-
-    @Override
-    protected void afterRequest(HttpServletRequest request, String message) {
-        if (request instanceof ContentCachingRequestWrapper) {
-            ContentCachingRequestWrapper contentCachingRequestWrapper = (ContentCachingRequestWrapper) request;
-            String requestBody = contentCachingRequestWrapper.getContentAsString();
-            if(!requestBody.isEmpty()){
-                try {
-                    Map<String, Object> requestBodyMap = objectMapper.readValue(requestBody, Map.class);
-                    logger.info("REQUEST body={}",objectMapper.writeValueAsString(requestBodyMap));
-                } catch (JsonProcessingException e) {
-                    if(logger.isDebugEnabled()) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-        }
-    }
-
-    private void logRequest(ServletRequest servletRequest) throws IOException {
+    private void logRequest(ContentCachingRequestWrapper servletRequest) throws IOException {
         if (servletRequest instanceof HttpServletRequest) {
+
             StringBuilder logFormat = new StringBuilder("REQUEST [{}] url={} headers={}");
             StringBuilder optionalMessage = new StringBuilder();
 
@@ -90,6 +69,11 @@ public class RequestLoggingFilter extends AbstractRequestLoggingFilter {
                     optionalMessage
             );
         }
-
     }
+    private void logResponse(ContentCachingResponseWrapper response,Long startTime) throws IOException {
+        Long processingTime = System.currentTimeMillis() - startTime;
+        logger.info("RESPONSE [{} ms] status=[{}] body={}",processingTime,response.getStatus(),new String(response.getContentAsByteArray()));
+        response.copyBodyToResponse();
+    }
+
 }

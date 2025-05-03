@@ -1,5 +1,9 @@
 package com.devpuccino.accountservice.constant;
 
-public class TransactionType {
-    public static final String INITIAL = "initial";
+public enum TransactionType {
+    INITIAL("initial"),INCOME("income"),EXPENSE("expense");
+
+    TransactionType(String value) {
+
+    }
 }

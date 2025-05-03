@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<TransactionEntity,Long> {
-    public List<TransactionEntity> findAllByWalletId(int walletId);
+    List<TransactionEntity> findAllByWalletId(int walletId);
 }

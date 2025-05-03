@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.devpuccino.accountservice.constant.ResponseConstant.SUCCESS_CODE;
+import static com.devpuccino.accountservice.constant.ResponseConstant.SUCCESS_MESSAGE;
+
 @RestController
 @RequestMapping("/api/wallet")
 public class WalletController {
@@ -21,45 +24,29 @@ public class WalletController {
 
     @Autowired
     private WalletService walletService;
+
     @GetMapping
-    public CommonResponse<List<Wallet>> getAllWallet(){
-        logger.info("getAllWallet");
-
+    public CommonResponse<List<Wallet>> getAllWallet() {
         List<Wallet> wallets = walletService.getAllWallet();
-        CommonResponse commonResponse = new CommonResponse();
-        commonResponse.setCode(ResponseConstant.SUCCESS_CODE);
-        commonResponse.setMessage(ResponseConstant.SUCCESS_MESSAGE);
-        commonResponse.setData(wallets);
-
-        return commonResponse;
+        return CommonResponse.<List<Wallet>>builder().code(SUCCESS_CODE).message(SUCCESS_MESSAGE).data(wallets).build();
     }
 
     @PostMapping
     public CommonResponse<Wallet> createWallet(@RequestBody WalletRequest request) {
         Wallet wallet = walletService.insertWallet(request);
-        CommonResponse response = new CommonResponse();
-        response.setCode(ResponseConstant.SUCCESS_CODE);
-        response.setMessage(ResponseConstant.SUCCESS_MESSAGE);
-        response.setData(wallet);
-        return response;
+        return CommonResponse.<Wallet>builder().code(SUCCESS_CODE).message(SUCCESS_MESSAGE).data(wallet).build();
     }
 
     @DeleteMapping("/{id}")
     public CommonResponse deleteWallet(@PathVariable("id") String walletId) {
         walletService.deleteWallet(walletId);
-        CommonResponse response = new CommonResponse();
-        response.setCode(ResponseConstant.SUCCESS_CODE);
-        response.setMessage(ResponseConstant.SUCCESS_MESSAGE);
-        return response;
+        return CommonResponse.builder().code(SUCCESS_CODE).message(SUCCESS_MESSAGE).build();
     }
+
     @GetMapping("/{id}")
     public CommonResponse<Wallet> getWalletById(@PathVariable("id") String walletId) throws DataNotFoundException {
         Wallet wallet = walletService.getWalletById(walletId);
-        CommonResponse response = new CommonResponse();
-        response.setCode(ResponseConstant.SUCCESS_CODE);
-        response.setMessage(ResponseConstant.SUCCESS_MESSAGE);
-        response.setData(wallet);
-        return response;
+        return CommonResponse.<Wallet>builder().code(SUCCESS_CODE).message(SUCCESS_MESSAGE).data(wallet).build();
     }
 
 }

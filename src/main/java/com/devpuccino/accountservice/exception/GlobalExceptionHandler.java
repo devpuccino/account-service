@@ -1,10 +1,13 @@
 package com.devpuccino.accountservice.exception;
 
 import com.devpuccino.accountservice.domain.response.CommonResponse;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -21,20 +24,15 @@ public class GlobalExceptionHandler {
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     public CommonResponse handleException(Exception exception){
         logger.error(exception.getMessage(),exception);
-        CommonResponse response = new CommonResponse();
-        response.setCode(UNEXPECTED_ERROR_CODE);
-        response.setMessage(UNEXPECTED_ERROR_MESSAGE);
-        return response;
+        return CommonResponse.builder().code(UNEXPECTED_ERROR_CODE).message(UNEXPECTED_ERROR_MESSAGE).build();
     }
 
     @ExceptionHandler(DuplicateDataException.class)
     @ResponseBody
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public CommonResponse handleDuplicateDataException(DuplicateDataException exception){
-        CommonResponse response = new CommonResponse();
-        response.setCode(DUPLICATE_DATA_CODE);
-        response.setMessage(DUPLICATE_DATA_MESSAGE);
-        return response;
+        logger.error(exception.getMessage(),exception);
+        return CommonResponse.builder().code(DUPLICATE_DATA_CODE).message(DUPLICATE_DATA_MESSAGE).build();
     }
 
     @ExceptionHandler(DataNotFoundException.class)
@@ -42,9 +40,13 @@ public class GlobalExceptionHandler {
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public CommonResponse handleDataNotFoundException(DataNotFoundException exception){
         logger.error(exception.getMessage(),exception);
-        CommonResponse response = new CommonResponse();
-        response.setCode(DATA_NOT_FOUND_CODE);
-        response.setMessage(DATA_NOT_FOUND_MESSAGE);
-        return response;
+        return CommonResponse.builder().code(DATA_NOT_FOUND_CODE).message(DATA_NOT_FOUND_MESSAGE).build();
+    }
+    @ExceptionHandler(value={MethodArgumentNotValidException.class, HttpMessageNotReadableException.class})
+    @ResponseBody
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public CommonResponse handleMethodArgumentNotValidException(Exception exception){
+        logger.error(exception.getMessage(),exception);
+        return CommonResponse.builder().code(INVALID_REQUEST_CODE).message(INVALID_REQUEST_MESSAGE).build();
     }
 }
