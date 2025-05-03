@@ -16,8 +16,22 @@ spring:
       minimum-idle: 5
       maximum-pool-size: 10
       max-lifetime: 300000
+app:
+  account-auth-service:
+    base-url: http://localhost:7070/account-auth-service
+management:
+  otlp:
+    tracing:
+      endpoint: http://192.168.7.100:24318/v1/traces
+  tracing:
+    baggage:
+      correlation:
+        fields: correlationId
+      remote-fields: correlationId
+    sampling:
+      probability: 1.0
 logging:
   level:
     root: INFO
   pattern:
-    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX}|1|%level|${spring.application.name:-}|%X{traceId},%X{spanId},%X{X-Correlation-Id}|${PID:-}|%thread|%logger{40}|%message%n"
+    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX}|1|%level|${spring.application.name:-}|%X{traceId},%X{spanId},%X{correlationId}|${PID:-}|%thread|%logger{40}|%message%n"

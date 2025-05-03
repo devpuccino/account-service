@@ -14,7 +14,7 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 import java.io.IOException;
 
 @Component
-@Order(1)
+@Order(3)
 public class ResponseLoggingFilter extends OncePerRequestFilter {
     private static final Logger logger = LogManager.getLogger(ResponseLoggingFilter.class);
 
