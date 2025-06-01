@@ -28,7 +28,7 @@ public class AuthenticationController {
     public CommonResponse authentication() throws URISyntaxException {
         Map requestBody = new HashMap<String,String>();
         HttpEntity entity = new HttpEntity(requestBody);
-        authServiceRestTemplate.exchange("http://localhost:7070/account-auth-service/api/v1/authentication/login", HttpMethod.POST,entity,Map.class);
+        authServiceRestTemplate.exchange("http://account-auth-service:8080/account-auth-service/api/v1/authentication/login", HttpMethod.POST,entity,Map.class);
 
         CommonResponse response = new CommonResponse();
         response.setCode(ResponseConstant.SUCCESS_CODE);

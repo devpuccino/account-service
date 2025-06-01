@@ -1,34 +1,71 @@
 services:
-  jaeger:
-    image: jaegertracing/jaeger
-    ports:
-      - "26686:16686"
-      - "24317:4317"
-      - "24318:4318"
-      - "25778:5778"
-      - "29411:9411"
-      - "18889:8889"
-    volumes:
-      - ./config-spm.yml:/etc/jaeger/config.yml
-    command: ["--config", "/etc/jaeger/config.yml"]
-  prometheus:
-    image: prom/prometheus
-    ports:
-      - "19090:9090"
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-  mariadb:
-    image: mariadb:11
-    ports:
-      - "3306:3306"
-    volumes:
-      - "./data-1:/var/lib/mysql"
+#  jaeger:
+#    image: jaegertracing/jaeger
+#    ports:
+#      - "26686:16686"
+#      - "24317:4317"
+#      - "24318:4318"
+#      - "25778:5778"
+#      - "29411:9411"
+#      - "18889:8889"
+#    volumes:
+#      - ./config-spm.yml:/etc/jaeger/config.yml
+#    command: ["--config", "/etc/jaeger/config.yml"]
+#  prometheus:
+#    image: prom/prometheus
+#    ports:
+#      - "19090:9090"
+#    volumes:
+#      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+  opensearch:
+    image: opensearchproject/opensearch:2
     environment:
-      - MARIADB_USER=admin
-      - MARIADB_PASSWORD=P@ssw0rd
-      - MARIADB_DATABASE=account_db
-      - MARIADB_ROOT_PASSWORD=P@ssw0rd
-  redis:
-    image: redis:7
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=Admin#12345
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - opensearch_data:/usr/share/opensearch/data
+  opensearch-dashboard:
+    image: opensearchproject/opensearch-dashboards:2
     ports:
-      - "6379:6379"
+      - "15601:5601"
+    environment:
+      OPENSEARCH_HOSTS: '["https://opensearch:9200"]'
+  logstash:
+    image: service-logstash
+    environment:
+      - OPENSEARCH_HOSTS=https://opensearch:9200
+      - OPENSEARCH_USER=service_logstash
+      - OPENSEARCH_PASSWORD=service-logstash_#1234
+    depends_on:
+      - opensearch
+  account-service:
+    image: account-service
+    ports:
+      - "12345:8080"
+    environment:
+      - LOGSTASH_HOST=logstash:5044
+  account-auth-service:
+    image: accout-auth-service
+    ports:
+      - "12346:8080"
+
+#
+#  mariadb:
+#    image: mariadb:11
+#    ports:
+#      - "3306:3306"
+#    volumes:
+#      - "./data-1:/var/lib/mysql"
+#    environment:
+#      - MARIADB_USER=admin
+#      - MARIADB_PASSWORD=P@ssw0rd
+#      - MARIADB_DATABASE=account_db
+#      - MARIADB_ROOT_PASSWORD=P@ssw0rd
+#  redis:
+#    image: redis:7
+#    ports:
+#      - "6379:6379"
+volumes:
+  opensearch_data:
