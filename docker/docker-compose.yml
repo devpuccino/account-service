@@ -1,6 +1,9 @@
+name: accounting-system
 services:
   jaeger:
-    image: jaegertracing/jaeger
+    image: account-system/jaeger:latest
+    build:
+      context: ./image/jaeger
     ports:
       - "26686:16686"
       - "24317:4317"
@@ -8,15 +11,12 @@ services:
       - "25778:5778"
       - "29411:9411"
       - "18889:8889"
-    volumes:
-      - ./config-spm.yml:/etc/jaeger/config.yml
-    command: ["--config", "/etc/jaeger/config.yml"]
   prometheus:
-    image: prom/prometheus
+    image: account-system/prometheus:latest
+    build:
+      context: ./image/prometheus
     ports:
       - "19090:9090"
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
   opensearch:
     image: opensearchproject/opensearch:2
     environment:
@@ -53,7 +53,7 @@ services:
   mariadb:
     image: mariadb:11
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mariadb_data:/var/lib/mysql
     environment:
@@ -64,7 +64,7 @@ services:
   redis:
     image: redis:7
     ports:
-      - "6379:6379"
+      - "16379:6379"
 volumes:
   opensearch_data:
   mariadb_data:
